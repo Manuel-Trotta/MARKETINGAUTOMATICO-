@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard KPI con Miglioramenti</title>
+    <style>
+        body {
+            background-color: #0D3B66;
+            font-family: 'Helvetica Neue', sans-serif;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #F4D35E;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .dashboard-container {
+            background-color: #1E5F74;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #F4D35E;
+            color: #0D3B66;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #EE964B;
+        }
+
+        #results {
+            margin-top: 30px;
+            display: none;
+            background-color: #FFFFFF;
+            color: #0D3B66;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .suggestions, .situation, .revenue-projection {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            color: #333;
+        }
+
+        #charts {
+            margin-top: 40px;
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            .dashboard-container {
+                padding: 20px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Dashboard KPI con Miglioramenti</h1>
+
+    <div class="dashboard-container">
+        <div class="input-group">
+            <label for="traffic">Traffico web</label>
+            <input type="number" id="traffic" placeholder="Inserisci il traffico web...">
+        </div>
+        <div class="input-group">
+            <label for="conversion-rate">Tasso di conversione (%)</label>
+            <input type="number" id="conversion-rate" placeholder="Inserisci il tasso di conversione...">
+        </div>
+        <div class="input-group">
+            <label for="cpa">Costo per acquisizione (CPA)</label>
+            <input type="number" id="cpa" placeholder="Inserisci il costo per acquisizione...">
+        </div>
+        <div class="input-group">
+            <label for="roas">Return on Ad Spend (ROAS)</label>
+            <input type="number" id="roas" placeholder="Inserisci il ROAS...">
+        </div>
+
+        <button onclick="analyzeKPI()">Analizza KPI</button>
+
+        <div id="results">
+            <h3>Risultati dell'analisi</h3>
+            <div class="situation" id="situation"></div>
+
+            <div class="suggestions">
+                <h4>Problemi riscontrati e suggerimenti</h4>
+                <p id="suggestions-text"></p>
+            </div>
+
+            <div class="revenue-projection">
+                <h4>Proiezioni di fatturato</h4>
+                <p id="revenue-text"></p>
+            </div>
+
+            <div id="charts">
+                <canvas id="kpiChart" width="400" height="200"></canvas>
+            </div>
+
+            <div id="chatgpt-response">
+                <h4>Risposta ChatGPT</h4>
+                <p id="gpt-response"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        function analyzeKPI() {
+            const traffic = parseInt(document.getElementById("traffic").value);
+            const conversionRate = parseFloat(document.getElementById("conversion-rate").value);
+            const cpa = parseFloat(document.getElementById("cpa").value);
+            const roas = parseFloat(document.getElementById("roas").value);
+
+            let situationText = "";
+            let suggestionsText = "";
+            let revenueProjection = "";
+
+            // Analisi KPI e suggerimenti
+            if (conversionRate < 2) {
+                situationText += "Il tasso di conversione è molto basso.<br>";
+                suggestionsText += "Aumenta la qualità delle tue pagine o ottimizza le campagne pubblicitarie.<br>";
+            } else {
+                situationText += "Il tasso di conversione è nella media.<br>";
+            }
+
+            if (cpa > 50) {
+                situationText += "Il CPA è troppo alto.<br>";
+                suggestionsText += "Riduci il costo per clic e ottimizza le campagne.<br>";
+            } else {
+                situationText += "Il CPA è accettabile.<br>";
+            }
+
+            if (roas < 4) {
+                situationText += "Il ROAS è sotto la media.<br>";
+                suggestionsText += "Migliora il budget e utilizza strategie di test per gli annunci.<br>";
+            } else {
+                situationText += "Il ROAS è buono.<br>";
+            }
+
+            // Previsione di fatturato basata sui dati
+            const expectedRevenue = traffic * conversionRate * roas;
+            revenueProjection = `Se il trend attuale continua, il fatturato previsto è di circa €${expectedRevenue.toFixed(2)}.`;
+
+            document.getElementById("situation").innerHTML = situationText;
+            document.getElementById("suggestions-text").innerHTML = suggestionsText;
+            document.getElementById("revenue-text").innerHTML = revenueProjection;
+            document.getElementById("results").style.display = "block";
+
+            drawKPIChart(traffic, conversionRate, cpa, roas);
+            getGPTSuggestions();
+        }
+
+        function drawKPIChart(traffic, conversionRate, cpa, roas) {
+            const ctx = document.getElementById('kpiChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Traffico', 'Tasso di Conversione', 'CPA', 'ROAS'],
+                    datasets: [{
+                        label: 'KPI',
+                        data: [traffic, conversionRate, cpa, roas],
+                        backgroundColor: ['#F4D35E', '#F4D35E', '#F4D35E', '#F4D35E'],
+                        borderColor: ['#0D3B66', '#0D3B66', '#0D3B66', '#0D3B66'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function getGPTSuggestions() {
+            fetch('https://api.openai.com/v1/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer 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'
+                },
+                body: JSON.stringify({
+                    model: "text-davinci-003",
+                    prompt: "Suggerimenti per migliorare le performance di marketing per KPI come traffico, tasso di conversione, CPA e ROAS.",
+                    max_tokens: 100
+                })
+            })
+            .then(response => response.json())
+            .then
